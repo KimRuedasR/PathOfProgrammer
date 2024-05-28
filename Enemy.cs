@@ -3,42 +3,41 @@ using System.Collections;
 //test
 namespace Completed
 {
-	//Enemy inherits from MovingObject, our base class for objects that can move, Player also inherits from this.
+	//Enemy hereda de MovingObject, nuestra clase base para objetos que pueden moverse. Player también hereda de esta
 	public class Enemy : MovingObject
 	{
-		public int playerDamage;                            //The amount of food points to subtract from the player when attacking.
-		public AudioClip attackSound1;                      //First of two audio clips to play when attacking the player.
-		public AudioClip attackSound2;                      //Second of two audio clips to play when attacking the player.
+		public int playerDamage; //Cantidad de puntos de vida que se restan al jugador al atacar
+		public AudioClip attackSound1; //Clip de ataque al jugador 1
+		public AudioClip attackSound2; //Clip de ataque al jugador 2
 
 
-		private Animator animator;                          //Variable of type Animator to store a reference to the enemy's Animator component.
-		private Transform target;                           //Transform to attempt to move toward each turn.
-		private bool skipMove;                              //Boolean to determine whether or not enemy should skip a turn or move this turn.
+		private Animator animator; // Variable para almacenar una referencia al componente Animator del enemigo
+		private Transform target; // Transform para intentar moverse hacia cada turno
+		private bool skipMove; // Booleano para determinar si el enemigo debe saltar un turno o moverse en este turno
 
 
-		//Start overrides the virtual Start function of the base class.
+		// Start sobrescribe la función Start de la clase base
 		protected override void Start()
 		{
-			//Register this enemy with our instance of GameManager by adding it to a list of Enemy objects. 
-			//This allows the GameManager to issue movement commands.
+			//Registra este enemigo en nuestra instancia de GameManager agregándolo a una lista de objetos Enemy
+			//Permite que el GameManager emita comandos de movimiento.
 			GameManager.instance.AddEnemyToList(this);
 
-			//Get and store a reference to the attached Animator component.
+			//Obtiene y almacena una referencia al componente Animator adjunto
 			animator = GetComponent<Animator>();
 
-			//Find the Player GameObject using it's tag and store a reference to its transform component.
+			//Encuentra el GameObject "Player" usando su etiqueta y almacena una referencia a su componente transform
 			target = GameObject.FindGameObjectWithTag("Player").transform;
 
-			//Call the start function of our base class MovingObject.
+			//Llama a la función Start de nuestra clase base MovingObject
 			base.Start();
 		}
 
 
-		//Override the AttemptMove function of MovingObject to include functionality needed for Enemy to skip turns.
-		//See comments in MovingObject for more on how base AttemptMove function works.
+		//Sobrescribe la función AttemptMove de MovingObject para que Enemy salte turnos, más detallada en MovingObject.cs
 		protected override void AttemptMove<T>(int xDir, int yDir)
 		{
-			//Check if skipMove is true, if so set it to false and skip this turn.
+			//Verifica si skipMove es true, lo hace falso y salta este turno
 			if (skipMove)
 			{
 				skipMove = false;
@@ -46,52 +45,53 @@ namespace Completed
 
 			}
 
-			//Call the AttemptMove function from MovingObject.
+			//Llama a la función AttemptMove de MovingObject
 			base.AttemptMove<T>(xDir, yDir);
 
-			//Now that Enemy has moved, set skipMove to true to skip next move.
+			//Ya que Enemy se ha movido, establece skipMove en true para saltar el siguiente movimiento
 			skipMove = true;
 		}
 
 
-		//MoveEnemy is called by the GameManger each turn to tell each Enemy to try to move towards the player.
+		//MoveEnemy es llamado por el GameManager cada turno para indicar a cada Enemy que intente moverse hacia el jugador
 		public void MoveEnemy()
 		{
-			//Declare variables for X and Y axis move directions, these range from -1 to 1.
-			//These values allow us to choose between the cardinal directions: up, down, left and right.
+			//Declara variables para las direcciones de movimiento en los ejes X e Y, de -1 a 1
+			//Nos permiten elegir entre las direcciones cardinales: arriba, abajo, izquierda y derecha
 			int xDir = 0;
 			int yDir = 0;
 
-			//If the difference in positions is approximately zero (Epsilon) do the following:
+			//Si la diferencia en posiciones es aproximadamente cero (Epsilon):
 			if (Mathf.Abs(target.position.x - transform.position.x) < float.Epsilon)
 
-				//If the y coordinate of the target's (player) position is greater than the y coordinate of this enemy's position set y direction 1 (to move up). If not, set it to -1 (to move down).
+				/* Si la coordenada y de la posición del objetivo (jugador) es mayor que la coordenada y de esta posición del enemigo
+				establece la dirección y en 1 (mover hacia arriba). Si no, establece en -1 (mover hacia abajo) */
 				yDir = target.position.y > transform.position.y ? 1 : -1;
 
-			//If the difference in positions is not approximately zero (Epsilon) do the following:
+			//Si la diferencia en posiciones es mayor que Epsilon:
 			else
-				//Check if target x position is greater than enemy's x position, if so set x direction to 1 (move right), if not set to -1 (move left).
+				// Verifica si la posición x del objetivo es mayor que la posición x del enemigo y establece la dirección x en 1 (derecha), si no establece en -1 (izquierda)
 				xDir = target.position.x > transform.position.x ? 1 : -1;
 
-			//Call the AttemptMove function and pass in the generic parameter Player, because Enemy is moving and expecting to potentially encounter a Player
+			// Llama a la función AttemptMove y pasa el parámetro genérico Player, porque Enemy se está moviendo y espera potencialmente encontrarse con un Player
 			AttemptMove<Player>(xDir, yDir);
 		}
 
 
-		//OnCantMove is called if Enemy attempts to move into a space occupied by a Player, it overrides the OnCantMove function of MovingObject 
-		//and takes a generic parameter T which we use to pass in the component we expect to encounter, in this case Player
+		/* Es llamado si Enemy intenta moverse a un espacio ocupado por un Player, sobrescribe la función OnCantMove de MovingObject
+		 y toma un parámetro genérico T que usamos para pasar el componente que esperamos encontrar, en este caso Player. */
 		protected override void OnCantMove<T>(T component)
 		{
-			//Declare hitPlayer and set it to equal the encountered component.
+			//Declara hitPlayer y configúralo para igualar el componente encontrado
 			Player hitPlayer = component as Player;
 
-			//Call the LoseFood function of hitPlayer passing it playerDamage, the amount of foodpoints to be subtracted.
+			//Llama a la función LoseFood de hitPlayer pasándole playerDamage, la cantidad de puntos de vida a restar
 			hitPlayer.LoseFood(playerDamage);
 
-			//Set the attack trigger of animator to trigger Enemy attack animation.
+			//Establece el trigger "enemyAttack" del animator para activar la animación de ataque del enemigo
 			animator.SetTrigger("enemyAttack");
 
-			//Call the RandomizeSfx function of SoundManager passing in the two audio clips to choose randomly between.
+			//Llama a la función RandomizeSfx de SoundManager pasando los dos clips de audio para elegir aleatoriamente entre ellos
 			SoundManager.instance.RandomizeSfx(attackSound1, attackSound2);
 		}
 	}

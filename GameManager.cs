@@ -9,61 +9,59 @@ namespace Completed
 
 	public class GameManager : MonoBehaviour
 	{
-		public float levelStartDelay = 2f;                      //Time to wait before starting level, in seconds.
-		public float turnDelay = 0.1f;                          //Delay between each Player turn.
-		public int playerFoodPoints = 100;                      //Starting value for Player food points.
-		public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
-		[HideInInspector] public bool playersTurn = true;       //Boolean to check if it's players turn, hidden in inspector but public.
+		public float levelStartDelay = 2f; //Tiempo de espera antes de comenzar el nivel, en segundos
+		public float turnDelay = 0.1f; //Retraso entre cada turno
+		public int playerFoodPoints = 100; //Valor inicial de los puntos de comida del jugador
+		public static GameManager instance = null; //GameManager accesible desde cualquier otro script
+		[HideInInspector] public bool playersTurn = true; //Booleano para verificar si es el turno del jugador
 
 
-		private Text levelText;                                 //Text to display current level number.
-		private GameObject levelImage;                          //Image to block out level as levels are being set up, background for levelText.
-		private BoardManager boardScript;                       //Store a reference to our BoardManager which will set up the level.
-		private int level = 1;                                  //Current level number, expressed in game as "Day 1".
-		private List<Enemy> enemies;                            //List of all Enemy units, used to issue them move commands.
-		private bool enemiesMoving;                             //Boolean to check if enemies are moving.
-		private bool doingSetup = true;                         //Boolean to check if we're setting up board, prevent Player from moving during setup.
+		private Text levelText; //Texto para mostrar el número de nivel actual
+		private GameObject levelImage; //Imagen para bloquear el nivel mientras se configura
+		private BoardManager boardScript; //Almacena una referencia a BoardManager que configura el nivel
+		private int level = 1; //Número de nivel actual
+		private List<Enemy> enemies; //Lista de todas las unidades Enemy para emitirles comandos de movimiento
+		private bool enemiesMoving; //Booleano para verificar si los enemigos se están moviendo
+		private bool doingSetup = true; //Booleano para verificar configuracion del tablero, previene que el jugador se mueva durante la configuración
 
 
 
-		//Awake is always called before any Start functions
+
+		//Awake siempre se llama antes de cualquier función Start
 		void Awake()
 		{
-			//Check if instance already exists
+			//Verifica si la instancia ya existe.
 			if (instance == null)
 
-				//if not, set instance to this
 				instance = this;
 
-			//If instance already exists and it's not this:
 			else if (instance != this)
 
-				//Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
+				//Esto aplica nuestro patrón singleton, lo que significa que solo puede haber una instancia de GameManager
 				Destroy(gameObject);
 
-			//Sets this to not be destroyed when reloading scene
+			//No se destruye al recargar la escena
 			DontDestroyOnLoad(gameObject);
 
-			//Assign enemies to a new List of Enemy objects.
+			//Asigna enemigos a una nueva lista de objetos
 			enemies = new List<Enemy>();
 
-			//Get a component reference to the attached BoardManager script
+			//Obtén una referencia al script BoardManager adjunto
 			boardScript = GetComponent<BoardManager>();
 
-			//Call the InitGame function to initialize the first level 
+			//Llama a la función InitGame para iniciar el primer nivel
 			InitGame();
 		}
 
-		//this is called only once, and the paramter tell it to be called only after the scene was loaded
-		//(otherwise, our Scene Load callback would be called the very first load, and we don't want that)
+		//Se llama solo una vez y el parámetro indica que se llame solo después de que se haya cargado la escena
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
 		static public void CallbackInitialization()
 		{
-			//register the callback to be called everytime the scene is loaded
+			//Registra el callback para que se llame cada vez que se carga la escena
 			SceneManager.sceneLoaded += OnSceneLoaded;
 		}
 
-		//This is called each time a scene is loaded.
+		//Cada vez que se carga una escena
 		static private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
 		{
 			instance.level++;
@@ -71,109 +69,107 @@ namespace Completed
 		}
 
 
-		//Initializes the game for each level.
+		//Inicializa el juego para cada nivel.
 		void InitGame()
 		{
-			//While doingSetup is true the player can't move, prevent player from moving while title card is up.
+			//el jugador no puede moverse, previene que se mueva mientras la tarjeta de título está activa
 			doingSetup = true;
 
-			//Get a reference to our image LevelImage by finding it by name.
+			//Referencia a nuestra imagen LevelImage encontrándola por nombre 
 			levelImage = GameObject.Find("LevelImage");
 
-			//Get a reference to our text LevelText's text component by finding it by name and calling GetComponent.
+			//Referencia a nuestro texto LevelText encontrándolo por nombre y llamando a GetComponent
 			levelText = GameObject.Find("LevelText").GetComponent<Text>();
 
-			//Set the text of levelText to the string "Day" and append the current level number.
+			//Establece el texto de levelText al string "Day" y añade el número de nivel actual
 			levelText.text = "Day " + level;
 
-			//Set levelImage to active blocking player's view of the game board during setup.
+			//Activa levelImage bloqueando la vista del jugador del tablero de juego durante la configuración
 			levelImage.SetActive(true);
 
-			//Call the HideLevelImage function with a delay in seconds of levelStartDelay.
+			//Llama a la función HideLevelImage con un retraso en segundos de levelStartDelay
 			Invoke("HideLevelImage", levelStartDelay);
 
-			//Clear any Enemy objects in our List to prepare for next level.
+			//Limpia cualquier objeto Enemy en nuestra lista para prepararse para el siguiente nivel
 			enemies.Clear();
 
-			//Call the SetupScene function of the BoardManager script, pass it current level number.
+			//Llama a la función SetupScene del script BoardManager, pasa el número de nivel actual
 			boardScript.SetupScene(level);
 
 		}
 
 
-		//Hides black image used between levels
+		//Desactiva la imagen negra utilizada entre niveles
 		void HideLevelImage()
 		{
-			//Disable the levelImage gameObject.
+			//Desactiva la imagen de nivel
 			levelImage.SetActive(false);
 
-			//Set doingSetup to false allowing player to move again.
+			//Establece doingSetup en falso permitiendo que el jugador se mueva nuevamente
 			doingSetup = false;
 		}
 
-		//Update is called every frame.
+		//Update se llama una vez por frame
 		void Update()
 		{
-			//Check that playersTurn or enemiesMoving or doingSetup are not currently true.
+			//Revisa que playersTurn, enemiesMoving o doingSetup no sean  verdaderos
 			if (playersTurn || enemiesMoving || doingSetup)
-
-				//If any of these are true, return and do not start MoveEnemies.
+				//Si uno de estos es verdadero, regresa y no comienza a mover enemigos
 				return;
 
-			//Start moving enemies.
+			//Comienza a mover enemigos
 			StartCoroutine(MoveEnemies());
 		}
 
-		//Call this to add the passed in Enemy to the List of Enemy objects.
+		//Llamado por el script Enemy para agregar a sí mismo a la lista de enemigos
 		public void AddEnemyToList(Enemy script)
 		{
-			//Add Enemy to List enemies.
 			enemies.Add(script);
 		}
 
-
-		//GameOver is called when the player reaches 0 food points
+		//Cuando el jugador se queda sin puntos de comida
 		public void GameOver()
 		{
-			//Set levelText to display number of levels passed and game over message
+
+			//Muestra el número de niveles pasados y el mensaje de juego terminado
 			levelText.text = "After " + level + " days, you starved.";
 
-			//Enable black background image gameObject.
+			//Activa la imagen negra de fondo gameObject
 			levelImage.SetActive(true);
 
-			//Disable this GameManager.
+			//Desactiva este GameManager
 			enabled = false;
 		}
 
-		//Coroutine to move enemies in sequence.
+		//Coroutine para mover enemigos en secuencia
 		IEnumerator MoveEnemies()
 		{
-			//While enemiesMoving is true player is unable to move.
+			//Si los enemigos se están moviendo, el jugador no puede moverse
 			enemiesMoving = true;
 
-			//Wait for turnDelay seconds, defaults to .1 (100 ms).
+			//Pequeño retraso entre movimientos, para ver los movimientos de los enemigos
 			yield return new WaitForSeconds(turnDelay);
 
-			//If there are no enemies spawned (IE in first level):
+			//Si no hay enemigos generados (primer nivel)
 			if (enemies.Count == 0)
 			{
-				//Wait for turnDelay seconds between moves, replaces delay caused by enemies moving when there are none.
+				//Espera entre movimientos, reemplaza el retraso causado por los enemigos cuando no hay ninguno.
 				yield return new WaitForSeconds(turnDelay);
 			}
 
-			//Loop through List of Enemy objects.
+			//Para cada enemigo en la lista de enemigos
 			for (int i = 0; i < enemies.Count; i++)
 			{
-				//Call the MoveEnemy function of Enemy at index i in the enemies List.
+				//Llama a la función MoveEnemy de Enemy en el índice i en la lista de enemigos
 				enemies[i].MoveEnemy();
 
-				//Wait for Enemy's moveTime before moving next Enemy, 
+				//Espera el tiempo de movimiento del enemigo antes de mover al siguiente
 				yield return new WaitForSeconds(enemies[i].moveTime);
 			}
-			//Once Enemies are done moving, set playersTurn to true so player can move.
+			//Cuando los enemigos hayan terminado de moverse, establezca playersTurn en verdadero para que el jugador pueda moverse
 			playersTurn = true;
 
-			//Enemies are done moving, set enemiesMoving to false.
+			//Cuando los enemigos hayan terminado de moverse, establece enemiesMoving en falso
 			enemiesMoving = false;
 		}
 	}

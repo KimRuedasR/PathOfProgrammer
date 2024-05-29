@@ -7,7 +7,7 @@ namespace Completed
 	{
 		public AudioClip chopSound1; //Clip de ataque del jugador 1
 		public AudioClip chopSound2; //Clip de ataque del jugador 2
-		public Sprite dmgSprite; //Cambair sprite cuando el muro es dañado
+		public Sprite dmgSprite; //Cambiar sprite cuando el muro es dañado
 		public int hp = 3; //Vida del muro
 
 

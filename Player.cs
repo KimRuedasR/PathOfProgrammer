@@ -8,21 +8,21 @@ namespace Completed
 	//Player hereda de MovingObject, nuestra clase base para objetos que pueden moverse. Enemy también hereda de esta
 	public class Player : MovingObject
 	{
-		public float restartLevelDelay = 1f;        //Tiempo de demora en segundos para reiniciar el nivel
-		public int pointsPerFood = 10;              //Número de puntos para agregar al jugador cuando recoge un objeto de comida
-		public int pointsPerSoda = 20;              //Número de puntos para agregar al jugador cuando recoge un objeto de soda
-		public int wallDamage = 1;                  //Daño que un jugador hace a un muro al atacarlo
-		public Text foodText;                       //UI para mostrar el total de puntos de comida del jugador.
-		public AudioClip moveSound1;                //1 Audio de movimiento
-		public AudioClip moveSound2;                //2 Audio de movimiento
-		public AudioClip eatSound1;                 //1 Audio de comida
-		public AudioClip eatSound2;                 //2 Audio de comida
-		public AudioClip drinkSound1;               //1 Audio de soda.
-		public AudioClip drinkSound2;               //2 Audio de soda
-		public AudioClip gameOverSound;             //Audio de muerte
+		public float restartLevelDelay = 1f; //Tiempo de demora en segundos para reiniciar el nivel
+		public int pointsPerFood = 10; //Número de puntos para agregar al jugador cuando recoge un objeto de comida
+		public int pointsPerSoda = 20; //Número de puntos para agregar al jugador cuando recoge un objeto de soda
+		public int wallDamage = 1; //Daño que un jugador hace a un muro al atacarlo
+		public Text foodText; //UI para mostrar el total de puntos de comida del jugador.
+		public AudioClip moveSound1; //1 Audio de movimiento
+		public AudioClip moveSound2; //2 Audio de movimiento
+		public AudioClip eatSound1; //1 Audio de comida
+		public AudioClip eatSound2; //2 Audio de comida
+		public AudioClip drinkSound1; //1 Audio de soda.
+		public AudioClip drinkSound2; //2 Audio de soda
+		public AudioClip gameOverSound; //Audio de muerte
 
-		private Animator animator;                  //almacenar una referencia al componente Animator del jugador
-		private int food;                           //Almacenar el total de puntos de comida del jugador durante el nivel
+		private Animator animator; //almacenar una referencia al componente Animator del jugador
+		private int food; //Almacenar el total de puntos de comida del jugador durante el nivel
 
 #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
         private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen touch origin for mobile controls.
@@ -82,6 +82,7 @@ namespace Completed
 			{
 				vertical = 0;
 			}
+			
 			/*
 			-----------------------------------------------------------------------------------------------
 				Verifica si estamos en iOS, Android, Windows Phone 8 or Unity iPhone

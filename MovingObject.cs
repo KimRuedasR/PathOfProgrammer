@@ -26,7 +26,7 @@ namespace Completed
 			rb2D = GetComponent<Rigidbody2D>();
 
 			//Al almacenar el recíproco del tiempo de movimiento, se usa multiplicando en lugar de dividir, más eficiente.
-			inverseMoveTime = 1f / moveTime;
+			inverseMoveTime = 10f / moveTime;
 		}
 
 

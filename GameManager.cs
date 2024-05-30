@@ -172,9 +172,19 @@ namespace Completed
 			enemiesMoving = false;
 		}
 
-		//Función para iniciar el combate
+		// Método para verificar si el juego está en modo combate
+		public bool IsInCombat()
+		{
+			return isInCombat;
+		}
+
+
+		// Función para iniciar el combate
 		public void EnterCombat(Enemy enemy)
 		{
+			if (isInCombat) // Verificar si ya estamos en combate
+				return;
+
 			// Detiene el movimiento del jugador y los enemigos
 			playersTurn = false;
 			enemiesMoving = false;
@@ -206,7 +216,6 @@ namespace Completed
 				Debug.LogError("CombatManager no encontrado");
 			}
 		}
-
 		// Enemigo actual
 		public GameObject GetCurrentEnemy()
 		{

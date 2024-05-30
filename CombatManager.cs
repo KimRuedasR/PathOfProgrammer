@@ -59,7 +59,7 @@ namespace Completed
             PlaySound(combatStartClip);
 
             // Seleccionar una pregunta aleatoria dependiendo del nivel
-            int difficultyLevel = Mathf.FloorToInt(Mathf.Pow(1.2f, GameManager.instance.GetCurrentLevel()));
+            int difficultyLevel = Mathf.FloorToInt(Mathf.Pow(1.5f, GameManager.instance.GetCurrentLevel()));
             List<Question> filteredQuestions = questions.Where(q => q.difficulty <= difficultyLevel).ToList();
             int randomIndex = Random.Range(0, filteredQuestions.Count);
             Question selectedQuestion = filteredQuestions[randomIndex];
@@ -94,6 +94,7 @@ namespace Completed
             combatPanel.SetActive(true);
         }
 
+        //Comprueba si la respuesta seleccionada es correcta o incorrecta
         private void CheckAnswer(int selectedAnswerIndex, int correctAnswerIndex)
         {
             if (selectedAnswerIndex == correctAnswerIndex)

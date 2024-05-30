@@ -78,12 +78,14 @@ namespace Completed
 		}
 
 
-		/* Es llamado si Enemy intenta moverse a un espacio ocupado por un Player, sobrescribe la función OnCantMove de MovingObject
-		 y toma un parámetro genérico T que usamos para pasar el componente que esperamos encontrar, en este caso Player. */
+		// Es llamado si Enemy intenta moverse a un espacio ocupado por un Player, sobrescribe la función OnCantMove de MovingObject
 		protected override void OnCantMove<T>(T component)
 		{
-			// Inicia combate en lugar de atacar directamente
-			GameManager.instance.EnterCombat(this);
+			if (!GameManager.instance.IsInCombat()) // Verificar si no estamos en combate
+			{
+				// Inicia combate en lugar de atacar directamente
+				GameManager.instance.EnterCombat(this);
+			}
 		}
 	}
 }

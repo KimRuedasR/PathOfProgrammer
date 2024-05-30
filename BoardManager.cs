@@ -29,7 +29,7 @@ namespace Completed
 		public int columns = 8; //Columnas
 		public int rows = 8; //Filas
 		public Count wallCount = new Count(5, 9); //Límite de muros por nivel
-		public Count foodCount = new Count(1, 5); //Límite de aliments por nivel
+		public Count foodCount = new Count(1, 5); //Límite de alimentos por nivel
 		public GameObject exit;        //Prefab para generar salida
 		public GameObject[] floorTiles; //Array de prefabs de suelo
 		public GameObject[] wallTiles; //Array de prefabs de muro

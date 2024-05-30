@@ -56,6 +56,9 @@ namespace Completed
 
 		private void Update()
 		{
+			// Si el juego está en combate, no permite el movimiento del jugador
+			if (GameManager.instance.isInCombat) return;
+
 			//Si no es el turno del jugador, sale de la función
 			if (!GameManager.instance.playersTurn) return;
 
@@ -142,11 +145,8 @@ namespace Completed
 		// AttemptMove toma parámetro para que el jugador interactue y parámetros para dirección de movimiento
 		protected override void AttemptMove<T>(int xDir, int yDir)
 		{
-			//Cada vez que el jugador se mueve sustrae puntos de comida
-			food--;
-
 			//Actualiza el texto de la comida para reflejar el cambio
-			foodText.text = "Food: " + food;
+			foodText.text = "Vida: " + food;
 
 			//AttemptMove de la clase base, pasando el componente T (Wall) y la dirección x e y
 			base.AttemptMove<T>(xDir, yDir);

@@ -36,11 +36,18 @@ namespace Completed
 		public GameObject[] foodTiles; //Array de prefabs de comida
 		public GameObject[] enemyTiles; //Array de prefabs de enemigos
 		public GameObject[] outerWallTiles; //Array de prefabs de bordes
+		public AudioClip exitActivationClip; // Clip de audio para la activación de la salida
+		private AudioSource audioSource; // Componente de AudioSource
 
 		private Transform boardHolder; //Variable para almacenar una referencia al transform del objeto Board
 		private List<Vector3> gridPositions = new List<Vector3>(); //Lista de posibles ubicaciones para colocar los tiles.
 		private GameObject exitInstance; // Almacenar la instancia de salida
 
+		private void Start()
+		{
+			// Obtener o añadir el componente AudioSource
+			audioSource = gameObject.AddComponent<AudioSource>();
+		}
 
 		//Limpia nuestra lista gridPositions y la prepara para generar un nuevo tablero
 		void InitialiseList()
@@ -157,11 +164,18 @@ namespace Completed
 		}
 
 		// Método para activar la salida
+		// Método para activar la salida
 		public void ActivateExit()
 		{
 			if (exitInstance != null)
 			{
 				exitInstance.SetActive(true);
+
+				// Reproducir sonido de activación de la salida
+				if (exitActivationClip != null && audioSource != null)
+				{
+					audioSource.PlayOneShot(exitActivationClip);
+				}
 			}
 		}
 	}

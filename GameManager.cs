@@ -14,7 +14,7 @@ namespace Completed
 		public int playerFoodPoints = 3; //Valor inicial de los puntos de comida del jugador
 		public static GameManager instance = null; //GameManager accesible desde cualquier otro script
 		[HideInInspector] public bool playersTurn = true; //Booleano para verificar si es el turno del jugador
-
+		[HideInInspector] public bool isInCombat = false; // Booleano para verificar si el juego está en combate
 
 		private Text levelText; //Texto para mostrar el número de nivel actual
 		private GameObject levelImage; //Imagen para bloquear el nivel mientras se configura
@@ -24,19 +24,13 @@ namespace Completed
 		private bool enemiesMoving; //Booleano para verificar si los enemigos se están moviendo
 		private bool doingSetup = true; //Booleano para verificar configuracion del tablero, previene que el jugador se mueva durante la configuración
 
-
-
-
 		//Awake siempre se llama antes de cualquier función Start
 		void Awake()
 		{
 			//Verifica si la instancia ya existe.
 			if (instance == null)
-
 				instance = this;
-
 			else if (instance != this)
-
 				//Esto aplica nuestro patrón singleton, lo que significa que solo puede haber una instancia de GameManager
 				Destroy(gameObject);
 
@@ -68,7 +62,6 @@ namespace Completed
 			instance.InitGame();
 		}
 
-
 		//Inicializa el juego para cada nivel.
 		void InitGame()
 		{
@@ -95,9 +88,7 @@ namespace Completed
 
 			//Llama a la función SetupScene del script BoardManager, pasa el número de nivel actual
 			boardScript.SetupScene(level);
-
 		}
-
 
 		//Desactiva la imagen negra utilizada entre niveles
 		void HideLevelImage()
@@ -130,7 +121,6 @@ namespace Completed
 		//Cuando el jugador se queda sin puntos de comida
 		public void GameOver()
 		{
-
 			//Muestra el número de niveles pasados y el mensaje de juego terminado
 			levelText.text = "After " + level + " days, you starved.";
 
@@ -172,6 +162,36 @@ namespace Completed
 			//Cuando los enemigos hayan terminado de moverse, establece enemiesMoving en falso
 			enemiesMoving = false;
 		}
+
+		//Función para iniciar el combate
+		public void EnterCombat()
+		{
+			// Detiene el movimiento del jugador y los enemigos
+			playersTurn = false;
+			enemiesMoving = false;
+
+			// Establece el estado de combate en verdadero
+			isInCombat = true;
+
+			// Muestra la interfaz de combate y comienza el combate
+			CombatManager combatManager = FindObjectOfType<CombatManager>();
+			if (combatManager != null)
+			{
+				GameObject combatPanel = combatManager.combatPanel;
+				if (combatPanel != null)
+				{
+					combatPanel.SetActive(true);
+					combatManager.StartCombat();
+				}
+				else
+				{
+					Debug.LogError("CombatPanel not found in CombatManager!");
+				}
+			}
+			else
+			{
+				Debug.LogError("CombatManager not found!");
+			}
+		}
 	}
 }
-

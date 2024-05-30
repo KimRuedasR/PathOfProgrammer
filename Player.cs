@@ -24,14 +24,14 @@ namespace Completed
 		private int food; //Almacenar el total de puntos de comida del jugador durante el nivel
 		private const int maxFood = 4; // Maximo de puntos de comida que el jugador puede obtener en el juego
 		private bool facingRight = true; // Almacenar la direccion del jugador
-				
+
 		public Image FoodImage; // El objeto de la imagen de vida en el UI
 		public Sprite life4Sprite;
 		public Sprite life3Sprite;
 		public Sprite life2Sprite;
 		public Sprite life1Sprite;
 		public Sprite life0Sprite;
-		
+
 
 		//Start sobrescribe la función Start de MovingObject
 		protected override void Start()
@@ -96,17 +96,17 @@ namespace Completed
 			//Dirección de movimiento en x y y
 			int horizontal = 0;
 			int vertical = 0;
-			
+
 			//Input manager, redondea a entero y almacena en horizontal para dirección de movimiento en x 
 			//Obtén la entrada del gestor de entrada, 
-			
-			horizontal = (int) (Input.GetAxisRaw ("Horizontal"));
-			
+
+			horizontal = (int)(Input.GetAxisRaw("Horizontal"));
+
 			//Input manager, redondea a entero y almacena en vertical para dirección de movimiento en y
-			vertical = (int) (Input.GetAxisRaw ("Vertical"));
-			
-			 //Movimiento horizontalmente, establece vertical en cero.
-			if(horizontal != 0)
+			vertical = (int)(Input.GetAxisRaw("Vertical"));
+
+			//Movimiento horizontalmente, establece vertical en cero.
+			if (horizontal != 0)
 			{
 				vertical = 0;
 			}
@@ -116,33 +116,33 @@ namespace Completed
 			{
 
 				// Verificar la dirección del movimiento y voltear al jugador si es necesario
-        		Flip(horizontal);
+				Flip(horizontal);
 				//Wall como parámetro para que el jugador interactue (ataque)
 				//horizontal y vertical como parámetros para dirección de movimiento
 				AttemptMove<Wall>(horizontal, vertical);
 			}
 		}
-		
+
 		//Método para voltear la dirección del jugador
-			private void Flip(int horizontal)
+		private void Flip(int horizontal)
+		{
+			// Si el jugador se mueve a la derecha y no está mirando a la derecha, voltear
+			if (horizontal > 0 && !facingRight)
 			{
-				// Si el jugador se mueve a la derecha y no está mirando a la derecha, voltear
-				if (horizontal > 0 && !facingRight)
-				{
-					facingRight = true;
-					Vector3 theScale = transform.localScale;
-					theScale.x *= -1;
-					transform.localScale = theScale;
-				}
-				// Si el jugador se mueve a la izquierda y está mirando a la derecha, voltear
-				else if (horizontal < 0 && facingRight)
-				{
-					facingRight = false;
-					Vector3 theScale = transform.localScale;
-					theScale.x *= -1;
-					transform.localScale = theScale;
-				}
+				facingRight = true;
+				Vector3 theScale = transform.localScale;
+				theScale.x *= -1;
+				transform.localScale = theScale;
 			}
+			// Si el jugador se mueve a la izquierda y está mirando a la derecha, voltear
+			else if (horizontal < 0 && facingRight)
+			{
+				facingRight = false;
+				Vector3 theScale = transform.localScale;
+				theScale.x *= -1;
+				transform.localScale = theScale;
+			}
+		}
 
 
 		//Sobrescribe la función AttemptMove en la clase MovingObject.
@@ -192,28 +192,33 @@ namespace Completed
 		private void OnTriggerEnter2D(Collider2D other)
 		{
 
-			//Revisa si la etiqueta con la que colisionó es Exit
+			// Revisa si la etiqueta con la que colisionó es Exit
 			if (other.tag == "Exit")
 			{
-				//Función Restart para comenzar el siguiente nivel con un retraso de restartLevelDelay (1 segundo).
-				Invoke("Restart", restartLevelDelay);
+				// Verifica si todos los enemigos están eliminados
+				if (GameManager.instance.GetEnemiesCount() == 0)
+				{
+					// Función Restart para comenzar el siguiente nivel con un retraso de restartLevelDelay (1 segundo).
+					Invoke("Restart", restartLevelDelay);
 
-				//Desactiva el objeto del jugador ya que el nivel ha terminado
-				enabled = false;
+					// Desactiva el objeto del jugador ya que el nivel ha terminado
+					enabled = false;
+				}
 			}
 
 			//Revisa si la etiqueta con la que colisionó es Food
 			else if (other.tag == "Food")
 			{
 				//Añade pointsPerFood al total actual de comida del jugador
-				if (food < maxFood) {
+				if (food < maxFood)
+				{
 					food += pointsPerFood;
 
 					//Actualiza foodText para representar el total actual y notifica al jugador que ha ganado puntos
 					foodText.text = "+" + pointsPerFood + " Food: " + food;
 
 					//Actualiza la imagen de la vida del jugador
-                	UpdateFoodImage();
+					UpdateFoodImage();
 
 					//RandomizeSfx de SoundManager y pasa dos sonidos de comer
 					SoundManager.instance.RandomizeSfx(eatSound1, eatSound2);
@@ -226,14 +231,15 @@ namespace Completed
 			else if (other.tag == "Soda")
 			{
 				//Añade pointsPerSoda al total actual de comida del jugador
-				if (food < maxFood) {
+				if (food < maxFood)
+				{
 					food += pointsPerSoda;
 
 					//Actualiza foodText para representar el total actual y notifica al jugador que ha ganado puntos
 					foodText.text = "+" + pointsPerSoda + " Food: " + food;
 
 					//Actualiza la imagen de la vida del jugador
-                	UpdateFoodImage();
+					UpdateFoodImage();
 
 					//RandomizeSfx de SoundManager y pasa dos sonidos de tomar
 					SoundManager.instance.RandomizeSfx(drinkSound1, drinkSound2);
@@ -267,7 +273,7 @@ namespace Completed
 			foodText.text = "-" + loss + " Food: " + food;
 
 			//Actualiza la imagen de la vida del jugador
-        	UpdateFoodImage();
+			UpdateFoodImage();
 
 			//Verifica si el juego ha terminado
 			CheckIfGameOver();

@@ -24,8 +24,8 @@ namespace Completed
 		private List<Enemy> enemies; //Lista de todas las unidades Enemy para emitirles comandos de movimiento
 		private bool enemiesMoving; //Booleano para verificar si los enemigos se están moviendo
 		private bool doingSetup = true; //Booleano para verificar configuracion del tablero, previene que el jugador se mueva durante la configuración
-
 		private Enemy currentEnemy; // Almacena el enemigo actual
+
 
 		//Awake siempre se llama antes de cualquier función Start
 		void Awake()
@@ -207,20 +207,32 @@ namespace Completed
 			}
 		}
 
-		//Enemigo actual
+		// Enemigo actual
 		public GameObject GetCurrentEnemy()
 		{
 			return currentEnemy != null ? currentEnemy.gameObject : null;
 		}
 
-		//Eliminar enemigo de la lista
+		// Eliminar enemigo de la lista
 		public void RemoveEnemy(Enemy enemy)
 		{
 			if (enemies.Contains(enemy))
 			{
 				enemies.Remove(enemy);
 			}
+
+			// Verificar si todos los enemigos están eliminados
+			if (enemies.Count == 0)
+			{
+				// Activar la salida
+				boardScript.ActivateExit();
+			}
 		}
 
+		// Método para obtener la cantidad de enemigos restantes
+		public int GetEnemiesCount()
+		{
+			return enemies.Count;
+		}
 	}
 }

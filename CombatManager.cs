@@ -96,7 +96,7 @@ namespace Completed
                 // Si la respuesta es correcta, cambiar el sprite a dorado
                 StartCoroutine(ShowAnswerFeedback(answerButtons[selectedAnswerIndex], correctSprite));
                 // Si la respuesta es correcta, el jugador gana
-                Debug.Log("Correct answer! Player wins!");
+                Debug.Log("¡Respuesta correcta!");
 
                 // Reproduce la animación de ataque del jugador y sonido de corte
                 GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -122,7 +122,7 @@ namespace Completed
                 // Si la respuesta es incorrecta, cambiar el sprite a rojo
                 StartCoroutine(ShowAnswerFeedback(answerButtons[selectedAnswerIndex], incorrectSprite));
                 // Si la respuesta es incorrecta, el enemigo ataca
-                Debug.Log("Wrong answer! Enemy attacks!");
+                Debug.Log("¡Respuesta incorrecta!");
 
                 // Reproduce la animación de ataque del enemigo
                 GameObject enemy = GameManager.instance.GetCurrentEnemy();

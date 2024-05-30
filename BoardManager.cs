@@ -39,7 +39,7 @@ namespace Completed
 
 		private Transform boardHolder; //Variable para almacenar una referencia al transform del objeto Board
 		private List<Vector3> gridPositions = new List<Vector3>(); //Lista de posibles ubicaciones para colocar los tiles.
-
+		private GameObject exitInstance; // Almacenar la instancia de salida
 
 
 		//Limpia nuestra lista gridPositions y la prepara para generar un nuevo tablero
@@ -144,14 +144,25 @@ namespace Completed
 			//Instancia un número aleatorio de tiles de alimento basado en los límites mínimo y máximo aleaotorio
 			LayoutObjectAtRandom(foodTiles, foodCount.minimum, foodCount.maximum);
 
-			//Determina el número de enemigos basado en el número de nivel actual, basado en una progresión logarítmica
-			int enemyCount = (int)Mathf.Log(level, 2f);
+			// Determina el número de enemigos basado en el número de nivel actual siguiendo un patrón incremental
+			int enemyCount = Mathf.Min(1 + (level - 1) / 2, 1 + (level - 1) / 2 + 1);
 
 			//Instancia un número aleatorio de enemigos basado en los límites mínimo y máximo, en posiciones aleatorias
 			LayoutObjectAtRandom(enemyTiles, enemyCount, enemyCount);
+			// Instancia el tile de salida en la esquina superior derecha de nuestro tablero de juego
+			exitInstance = Instantiate(exit, new Vector3(columns - 1, rows - 1, 0f), Quaternion.identity);
 
-			//Instancia el tile de salida en la esquina superior derecha de nuestro tablero de juego
-			Instantiate(exit, new Vector3(columns - 1, rows - 1, 0f), Quaternion.identity);
+			// Desactivar la salida inicialmente
+			exitInstance.SetActive(false);
+		}
+
+		// Método para activar la salida
+		public void ActivateExit()
+		{
+			if (exitInstance != null)
+			{
+				exitInstance.SetActive(true);
+			}
 		}
 	}
 }

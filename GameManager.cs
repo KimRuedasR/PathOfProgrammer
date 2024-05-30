@@ -24,6 +24,8 @@ namespace Completed
 		private bool enemiesMoving; //Booleano para verificar si los enemigos se están moviendo
 		private bool doingSetup = true; //Booleano para verificar configuracion del tablero, previene que el jugador se mueva durante la configuración
 
+		private Enemy currentEnemy; // Almacena el enemigo actual
+
 		//Awake siempre se llama antes de cualquier función Start
 		void Awake()
 		{
@@ -164,7 +166,7 @@ namespace Completed
 		}
 
 		//Función para iniciar el combate
-		public void EnterCombat()
+		public void EnterCombat(Enemy enemy)
 		{
 			// Detiene el movimiento del jugador y los enemigos
 			playersTurn = false;
@@ -173,10 +175,14 @@ namespace Completed
 			// Establece el estado de combate en verdadero
 			isInCombat = true;
 
+			// Establece el enemigo actual
+			currentEnemy = enemy;
+
 			// Muestra la interfaz de combate y comienza el combate
 			CombatManager combatManager = FindObjectOfType<CombatManager>();
 			if (combatManager != null)
 			{
+				//Activa el panel de combate y comienza el combate
 				GameObject combatPanel = combatManager.combatPanel;
 				if (combatPanel != null)
 				{
@@ -185,13 +191,29 @@ namespace Completed
 				}
 				else
 				{
-					Debug.LogError("CombatPanel not found in CombatManager!");
+					Debug.LogError("CombatPanel no encontrado en CombatManager!");
 				}
 			}
 			else
 			{
-				Debug.LogError("CombatManager not found!");
+				Debug.LogError("CombatManager no encontrado");
 			}
 		}
+
+		//Enemigo actual
+		public GameObject GetCurrentEnemy()
+		{
+			return currentEnemy != null ? currentEnemy.gameObject : null;
+		}
+
+		//Eliminar enemigo de la lista
+		public void RemoveEnemy(Enemy enemy)
+		{
+			if (enemies.Contains(enemy))
+			{
+				enemies.Remove(enemy);
+			}
+		}
+
 	}
 }

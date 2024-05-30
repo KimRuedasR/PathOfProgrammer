@@ -83,18 +83,7 @@ namespace Completed
 		protected override void OnCantMove<T>(T component)
 		{
 			// Inicia combate en lugar de atacar directamente
-			GameManager.instance.EnterCombat();
-			// //Declara hitPlayer y configúralo para igualar el componente encontrado
-			// Player hitPlayer = component as Player;
-
-			// //Llama a la función LoseFood de hitPlayer pasándole playerDamage, la cantidad de puntos de vida a restar
-			// hitPlayer.LoseFood(playerDamage);
-
-			// //Establece el trigger "enemyAttack" del animator para activar la animación de ataque del enemigo
-			// animator.SetTrigger("enemyAttack");
-
-			// //Llama a la función RandomizeSfx de SoundManager pasando los dos clips de audio para elegir aleatoriamente entre ellos
-			// SoundManager.instance.RandomizeSfx(attackSound1, attackSound2);
+			GameManager.instance.EnterCombat(this);
 		}
 	}
 }

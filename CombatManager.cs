@@ -81,24 +81,47 @@ namespace Completed
         {
             if (selectedAnswerIndex == correctAnswerIndex)
             {
-                // Si la respuesta es correcta, cambiar el sprite a dorado
-                StartCoroutine(ShowAnswerFeedback(answerButtons[selectedAnswerIndex], correctSprite));
                 // Si la respuesta es correcta, el jugador gana
                 Debug.Log("Correct answer! Player wins!");
+                // Reproduce la animación de ataque del jugador
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+                Animator playerAnimator = player.GetComponent<Animator>();
+                playerAnimator.SetTrigger("playerChop");
+
+                // Destruye al enemigo
+                GameObject enemy = GameManager.instance.GetCurrentEnemy();
+                if (enemy != null)
+                {
+                    Enemy enemyScript = enemy.GetComponent<Enemy>();
+                    GameManager.instance.RemoveEnemy(enemyScript);
+                    Destroy(enemy);
+                }
+
                 // Desactivar el panel de combate
-                StartCoroutine(DisableCombatPanelAfterDelay());
-                
+                combatPanel.SetActive(false);
             }
             else
             {
-                // Si la respuesta es incorrecta, cambiar el sprite a rojo
-                StartCoroutine(ShowAnswerFeedback(answerButtons[selectedAnswerIndex], incorrectSprite));
                 // Si la respuesta es incorrecta, el enemigo ataca
                 Debug.Log("Wrong answer! Enemy attacks!");
+
+                // Reproduce la animación de ataque del enemigo
+                GameObject enemy = GameManager.instance.GetCurrentEnemy();
+                if (enemy != null)
+                {
+                    Animator enemyAnimator = enemy.GetComponent<Animator>();
+                    enemyAnimator.SetTrigger("enemyAttack");
+
+                    // El jugador pierde puntos de vida
+                    GameObject player = GameObject.FindGameObjectWithTag("Player");
+                    Player playerScript = player.GetComponent<Player>();
+                    playerScript.LoseFood(1);
+                }
+
                 // Desactivar el panel de combate
-                StartCoroutine(DisableCombatPanelAfterDelay());
-                
+                combatPanel.SetActive(false);
             }
+
             // Salir del estado de combate
             GameManager.instance.isInCombat = false;
         }

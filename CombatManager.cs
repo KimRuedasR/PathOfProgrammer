@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro; // Import TextMeshPro namespace
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 
 namespace Completed
@@ -11,6 +12,9 @@ namespace Completed
         public GameObject combatPanel; // Panel de combate
         public TMP_Text questionText; // Texto de la pregunta
         public Button[] answerButtons; // Botones para las respuestas
+
+        public Sprite correctSprite; // Sprite dorado
+        public Sprite incorrectSprite; // Sprite rojo
 
         [System.Serializable]
         public struct Question
@@ -77,23 +81,46 @@ namespace Completed
         {
             if (selectedAnswerIndex == correctAnswerIndex)
             {
+                // Si la respuesta es correcta, cambiar el sprite a dorado
+                StartCoroutine(ShowAnswerFeedback(answerButtons[selectedAnswerIndex], correctSprite));
                 // Si la respuesta es correcta, el jugador gana
                 Debug.Log("Correct answer! Player wins!");
                 // Desactivar el panel de combate
-                combatPanel.SetActive(false);
-                // Aquí puedes añadir más lógica para que el enemigo sea destruido
+                StartCoroutine(DisableCombatPanelAfterDelay());
+                
             }
             else
             {
+                // Si la respuesta es incorrecta, cambiar el sprite a rojo
+                StartCoroutine(ShowAnswerFeedback(answerButtons[selectedAnswerIndex], incorrectSprite));
                 // Si la respuesta es incorrecta, el enemigo ataca
                 Debug.Log("Wrong answer! Enemy attacks!");
                 // Desactivar el panel de combate
-                combatPanel.SetActive(false);
-                // Aquí puedes añadir más lógica para que el enemigo ataque al jugador
+                StartCoroutine(DisableCombatPanelAfterDelay());
+                
             }
-
             // Salir del estado de combate
             GameManager.instance.isInCombat = false;
+        }
+
+        private IEnumerator DisableCombatPanelAfterDelay()
+        {
+            // Esperar 2 segundos
+            yield return new WaitForSeconds(2f);
+            // Desactivar el panel de combate
+            combatPanel.SetActive(false);
+        }
+
+        private IEnumerator ShowAnswerFeedback(Button button, Sprite feedbackSprite)
+        {
+            // Guardar el sprite original
+            Sprite originalSprite = button.GetComponent<Image>().sprite;
+            // Cambiar al sprite de feedback
+            button.GetComponent<Image>().sprite = feedbackSprite;
+            // Esperar 2 segundos
+            yield return new WaitForSeconds(2f);
+            // Restaurar el sprite original
+            button.GetComponent<Image>().sprite = originalSprite;
         }
 
         [System.Serializable]

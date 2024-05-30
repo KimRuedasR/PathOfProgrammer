@@ -18,6 +18,7 @@ namespace Completed
 
 		private Text levelText; //Texto para mostrar el número de nivel actual
 		private GameObject levelImage; //Imagen para bloquear el nivel mientras se configura
+		private GameObject levelGameOver; //Imagen para bloquear el nivel mientras se configura
 		private BoardManager boardScript; //Almacena una referencia a BoardManager que configura el nivel
 		private int level = 1; //Número de nivel actual
 		private List<Enemy> enemies; //Lista de todas las unidades Enemy para emitirles comandos de movimiento
@@ -73,6 +74,9 @@ namespace Completed
 			//Referencia a nuestra imagen LevelImage encontrándola por nombre 
 			levelImage = GameObject.Find("LevelImage");
 
+			//Referencia a nuestra imagen LevelGameOver encontrándola por nombre 
+			levelGameOver = GameObject.Find("GameOver");
+
 			//Referencia a nuestro texto LevelText encontrándolo por nombre y llamando a GetComponent
 			levelText = GameObject.Find("LevelText").GetComponent<Text>();
 
@@ -81,6 +85,9 @@ namespace Completed
 
 			//Activa levelImage bloqueando la vista del jugador del tablero de juego durante la configuración
 			levelImage.SetActive(true);
+
+			//Desactiva levelGameOver
+			levelGameOver.SetActive(false);
 
 			//Llama a la función HideLevelImage con un retraso en segundos de levelStartDelay
 			Invoke("HideLevelImage", levelStartDelay);
@@ -126,8 +133,8 @@ namespace Completed
 			//Muestra el número de niveles pasados y el mensaje de juego terminado
 			levelText.text = "Ronda " + level + " alcanzada";
 
-			//Activa la imagen negra de fondo gameObject
-			levelImage.SetActive(true);
+			//Activa la imagen de GameOver de fondo gameObject
+			levelGameOver.SetActive(true);
 
 			//Desactiva este GameManager
 			enabled = false;

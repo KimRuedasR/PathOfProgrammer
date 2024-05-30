@@ -16,6 +16,11 @@ namespace Completed
         public Sprite correctSprite; // Sprite dorado
         public Sprite incorrectSprite; // Sprite rojo
 
+        public AudioClip combatStartClip; // Clip de audio para el inicio del combate
+        public AudioClip enemyDestroyedClip; // Clip de audio para la destrucción del enemigo
+        public AudioClip playerChopClip; // Clip de audio para la animación de corte del jugador
+        private AudioSource audioSource; // Componente de AudioSource
+
         [System.Serializable]
         public struct Question
         {
@@ -33,6 +38,9 @@ namespace Completed
 
             // Cargar preguntas desde el archivo JSON
             LoadQuestionsFromJson();
+
+            // Obtener o añadir el componente AudioSource
+            audioSource = gameObject.AddComponent<AudioSource>();
         }
 
         private void LoadQuestionsFromJson()
@@ -43,6 +51,9 @@ namespace Completed
 
         public void StartCombat()
         {
+            // Reproducir sonido de inicio de combate
+            PlaySound(combatStartClip);
+
             // Seleccionar una pregunta aleatoria y mostrarla
             int randomIndex = Random.Range(0, questions.Count);
             Question selectedQuestion = questions[randomIndex];
@@ -85,23 +96,25 @@ namespace Completed
                 StartCoroutine(ShowAnswerFeedback(answerButtons[selectedAnswerIndex], correctSprite));
                 // Si la respuesta es correcta, el jugador gana
                 Debug.Log("Correct answer! Player wins!");
-                // Reproduce la animación de ataque del jugador
+
+                // Reproduce la animación de ataque del jugador y sonido de corte
                 GameObject player = GameObject.FindGameObjectWithTag("Player");
                 Animator playerAnimator = player.GetComponent<Animator>();
                 playerAnimator.SetTrigger("playerChop");
+                PlaySound(playerChopClip);
 
-                // Destruye al enemigo
+                // Destruye al enemigo y reproduce sonido de destrucción
                 GameObject enemy = GameManager.instance.GetCurrentEnemy();
                 if (enemy != null)
                 {
                     Enemy enemyScript = enemy.GetComponent<Enemy>();
                     GameManager.instance.RemoveEnemy(enemyScript);
                     Destroy(enemy);
+                    PlaySound(enemyDestroyedClip);
                 }
 
                 // Desactivar el panel de combate
                 StartCoroutine(DisableCombatPanelAfterDelay());
-                
             }
             else
             {
@@ -125,7 +138,6 @@ namespace Completed
 
                 // Desactivar el panel de combate
                 StartCoroutine(DisableCombatPanelAfterDelay());
-                
             }
 
             // Salir del estado de combate
@@ -134,8 +146,8 @@ namespace Completed
 
         private IEnumerator DisableCombatPanelAfterDelay()
         {
-            // Esperar 2 segundos
-            yield return new WaitForSeconds(1f);
+            // Esperar 1 segundo
+            yield return new WaitForSeconds(0.5f);
             // Desactivar el panel de combate
             combatPanel.SetActive(false);
         }
@@ -147,9 +159,17 @@ namespace Completed
             // Cambiar al sprite de feedback
             button.GetComponent<Image>().sprite = feedbackSprite;
             // Esperar 2 segundos
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(0.5f);
             // Restaurar el sprite original
             button.GetComponent<Image>().sprite = originalSprite;
+        }
+
+        private void PlaySound(AudioClip clip)
+        {
+            if (clip != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(clip);
+            }
         }
 
         [System.Serializable]

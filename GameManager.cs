@@ -11,7 +11,7 @@ namespace Completed
 	{
 		public float levelStartDelay = 2f; //Tiempo de espera antes de comenzar el nivel, en segundos
 		public float turnDelay = 0.1f; //Retraso entre cada turno
-		public int playerFoodPoints = 100; //Valor inicial de los puntos de comida del jugador
+		public int playerFoodPoints = 3; //Valor inicial de los puntos de comida del jugador
 		public static GameManager instance = null; //GameManager accesible desde cualquier otro script
 		[HideInInspector] public bool playersTurn = true; //Booleano para verificar si es el turno del jugador
 

@@ -9,8 +9,8 @@ namespace Completed
 	public class Player : MovingObject
 	{
 		public float restartLevelDelay = 1f; //Tiempo de demora en segundos para reiniciar el nivel
-		public int pointsPerFood = 10; //Número de puntos para agregar al jugador cuando recoge un objeto de comida
-		public int pointsPerSoda = 20; //Número de puntos para agregar al jugador cuando recoge un objeto de soda
+		public int pointsPerFood = 1; //Número de puntos para agregar al jugador cuando recoge un objeto de comida
+		public int pointsPerSoda = 1; //Número de puntos para agregar al jugador cuando recoge un objeto de soda
 		public int wallDamage = 1; //Daño que un jugador hace a un muro al atacarlo
 		public Text foodText; //UI para mostrar el total de puntos de comida del jugador.
 		public AudioClip moveSound1; //1 Audio de movimiento
@@ -20,14 +20,18 @@ namespace Completed
 		public AudioClip drinkSound1; //1 Audio de soda.
 		public AudioClip drinkSound2; //2 Audio de soda
 		public AudioClip gameOverSound; //Audio de muerte
-
 		private Animator animator; //almacenar una referencia al componente Animator del jugador
 		private int food; //Almacenar el total de puntos de comida del jugador durante el nivel
+		private const int maxFood = 4; // Maximo de puntos de comida que el jugador puede obtener en el juego
 
-#if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-        private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen touch origin for mobile controls.
-#endif
-
+				
+		public Image FoodImage; // El objeto de la imagen de vida en el UI
+		public Sprite life4Sprite;
+		public Sprite life3Sprite;
+		public Sprite life2Sprite;
+		public Sprite life1Sprite;
+		public Sprite life0Sprite;
+		
 
 		//Start sobrescribe la función Start de MovingObject
 		protected override void Start()
@@ -39,10 +43,13 @@ namespace Completed
 			food = GameManager.instance.playerFoodPoints;
 
 			//Muestra el texto con el total de comida del jugador
-			foodText.text = "Food: " + food;
+			foodText.text = "Vida: " + food;
 
 			//Llama a la función Start de la clase base MovingObject
 			base.Start();
+
+			//Inicializa la imagen de vida
+			UpdateFoodImage();
 		}
 
 
@@ -51,6 +58,30 @@ namespace Completed
 		{
 			//Cuando el objeto Player se desactiva, almacena el total de comida actual en GameManager para que pueda recargarse en el próximo nivel
 			GameManager.instance.playerFoodPoints = food;
+		}
+
+		private void UpdateFoodImage()
+		{
+			if (food == 4)
+			{
+				FoodImage.sprite = life4Sprite;
+			}
+			else if (food == 3)
+			{
+				FoodImage.sprite = life3Sprite;
+			}
+			else if (food == 2)
+			{
+				FoodImage.sprite = life2Sprite;
+			}
+			else if (food == 1)
+			{
+				FoodImage.sprite = life1Sprite;
+			}
+			else
+			{
+				FoodImage.sprite = life0Sprite;
+			}
 		}
 
 
@@ -62,12 +93,6 @@ namespace Completed
 			//Dirección de movimiento en x y y
 			int horizontal = 0;
 			int vertical = 0;
-			/*
-			-----------------------------------------------------------------------------------------------
-				Verifica si estamos ejecutamos en el editor de Unity o compilación independiente
-			-----------------------------------------------------------------------------------------------
-			*/
-#if UNITY_STANDALONE || UNITY_WEBPLAYER
 			
 			//Input manager, redondea a entero y almacena en horizontal para dirección de movimiento en x 
 			//Obtén la entrada del gestor de entrada, 
@@ -82,52 +107,6 @@ namespace Completed
 			{
 				vertical = 0;
 			}
-			
-			/*
-			-----------------------------------------------------------------------------------------------
-				Verifica si estamos en iOS, Android, Windows Phone 8 or Unity iPhone
-			-----------------------------------------------------------------------------------------------
-			*/
-#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-			
-			//Verifica si Input ha registrado más de cero toques.
-			if (Input.touchCount > 0)
-			{
-				//Almacena el primer toque detectado.
-				Touch myTouch = Input.touches[0];
-				
-				//Verifica si la fase de toque es igual a Began.
-				if (myTouch.phase == TouchPhase.Began)
-				{
-					//posición de ese toque
-					touchOrigin = myTouch.position;
-				}
-				
-				//Si la fase del toque no es Began, y en cambio es igual a Ended y la x de touchOrigin es mayor o igual a cero
-				else if (myTouch.phase == TouchPhase.Ended && touchOrigin.x >= 0)
-				{
-					//touchEnd igual a la posición de este toque
-					Vector2 touchEnd = myTouch.position;
-					
-					//Diferencia entre el comienzo y el final del toque en x
-					float x = touchEnd.x - touchOrigin.x;
-					
-					//Diferencia entre el comienzo y el final del toque en y
-					float y = touchEnd.y - touchOrigin.y;
-					
-					//touchOrigin.x en -1 para que la condicion no se repita inmediatamente.
-					touchOrigin.x = -1;
-					
-					//Verifica si la diferencia a lo largo de x es mayor que la diferencia de y.
-					if (Mathf.Abs(x) > Mathf.Abs(y))
-
-						horizontal = x > 0 ? 1 : -1;
-					else
-						vertical = y > 0 ? 1 : -1;
-				}
-			}
-			
-#endif // Fin de la sección de compilación dependiente de la plataforma
 
 			//Verifica si tenemos un valor distinto de cero para horizontal o vertical.
 			if (horizontal != 0 || vertical != 0)
@@ -143,10 +122,10 @@ namespace Completed
 		protected override void AttemptMove<T>(int xDir, int yDir)
 		{
 			//Cada vez que el jugador se mueve sustrae puntos de comida
-			food--;
+			
 
 			//Actualiza el texto de la comida para reflejar el cambio
-			foodText.text = "Food: " + food;
+			foodText.text = "Vida: " + food;
 
 			//AttemptMove de la clase base, pasando el componente T (Wall) y la dirección x e y
 			base.AttemptMove<T>(xDir, yDir);
@@ -187,6 +166,7 @@ namespace Completed
 		//OnTriggerEnter2D se envía cuando otro objeto entra en un collider adjunto a este objeto (física 2D).
 		private void OnTriggerEnter2D(Collider2D other)
 		{
+
 			//Revisa si la etiqueta con la que colisionó es Exit
 			if (other.tag == "Exit")
 			{
@@ -201,14 +181,18 @@ namespace Completed
 			else if (other.tag == "Food")
 			{
 				//Añade pointsPerFood al total actual de comida del jugador
-				food += pointsPerFood;
+				if (food < maxFood) {
+					food += pointsPerFood;
 
-				//Actualiza foodText para representar el total actual y notifica al jugador que ha ganado puntos
-				foodText.text = "+" + pointsPerFood + " Food: " + food;
+					//Actualiza foodText para representar el total actual y notifica al jugador que ha ganado puntos
+					foodText.text = "+" + pointsPerFood + " Food: " + food;
 
-				//RandomizeSfx de SoundManager y pasa dos sonidos de comer
-				SoundManager.instance.RandomizeSfx(eatSound1, eatSound2);
+					//Actualiza la imagen de la vida del jugador
+                	UpdateFoodImage();
 
+					//RandomizeSfx de SoundManager y pasa dos sonidos de comer
+					SoundManager.instance.RandomizeSfx(eatSound1, eatSound2);
+				}
 				//Desactiva el objeto de comida con el que colisionó el jugador
 				other.gameObject.SetActive(false);
 			}
@@ -217,14 +201,18 @@ namespace Completed
 			else if (other.tag == "Soda")
 			{
 				//Añade pointsPerSoda al total actual de comida del jugador
-				food += pointsPerSoda;
+				if (food < maxFood) {
+					food += pointsPerSoda;
 
-				//Actualiza foodText para representar el total actual y notifica al jugador que ha ganado puntos
-				foodText.text = "+" + pointsPerSoda + " Food: " + food;
+					//Actualiza foodText para representar el total actual y notifica al jugador que ha ganado puntos
+					foodText.text = "+" + pointsPerSoda + " Food: " + food;
 
-				//RandomizeSfx de SoundManager y pasa dos sonidos de tomar
-				SoundManager.instance.RandomizeSfx(drinkSound1, drinkSound2);
+					//Actualiza la imagen de la vida del jugador
+                	UpdateFoodImage();
 
+					//RandomizeSfx de SoundManager y pasa dos sonidos de tomar
+					SoundManager.instance.RandomizeSfx(drinkSound1, drinkSound2);
+				}
 				//Desactiva el objeto de bebida con el que colisionó el jugador
 				other.gameObject.SetActive(false);
 			}
@@ -252,6 +240,9 @@ namespace Completed
 
 			//Actualiza la pantalla de comida con el nuevo total
 			foodText.text = "-" + loss + " Food: " + food;
+
+			//Actualiza la imagen de la vida del jugador
+        	UpdateFoodImage();
 
 			//Verifica si el juego ha terminado
 			CheckIfGameOver();

@@ -81,6 +81,8 @@ namespace Completed
         {
             if (selectedAnswerIndex == correctAnswerIndex)
             {
+                // Si la respuesta es correcta, cambiar el sprite a dorado
+                StartCoroutine(ShowAnswerFeedback(answerButtons[selectedAnswerIndex], correctSprite));
                 // Si la respuesta es correcta, el jugador gana
                 Debug.Log("Correct answer! Player wins!");
                 // Reproduce la animación de ataque del jugador
@@ -98,10 +100,13 @@ namespace Completed
                 }
 
                 // Desactivar el panel de combate
-                combatPanel.SetActive(false);
+                StartCoroutine(DisableCombatPanelAfterDelay());
+                
             }
             else
             {
+                // Si la respuesta es incorrecta, cambiar el sprite a rojo
+                StartCoroutine(ShowAnswerFeedback(answerButtons[selectedAnswerIndex], incorrectSprite));
                 // Si la respuesta es incorrecta, el enemigo ataca
                 Debug.Log("Wrong answer! Enemy attacks!");
 
@@ -119,7 +124,8 @@ namespace Completed
                 }
 
                 // Desactivar el panel de combate
-                combatPanel.SetActive(false);
+                StartCoroutine(DisableCombatPanelAfterDelay());
+                
             }
 
             // Salir del estado de combate
@@ -129,7 +135,7 @@ namespace Completed
         private IEnumerator DisableCombatPanelAfterDelay()
         {
             // Esperar 2 segundos
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             // Desactivar el panel de combate
             combatPanel.SetActive(false);
         }

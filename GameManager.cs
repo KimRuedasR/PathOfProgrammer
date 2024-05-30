@@ -77,7 +77,7 @@ namespace Completed
 			levelText = GameObject.Find("LevelText").GetComponent<Text>();
 
 			//Establece el texto de levelText al string "Day" y añade el número de nivel actual
-			levelText.text = "Day " + level;
+			levelText.text = "Ronda " + level;
 
 			//Activa levelImage bloqueando la vista del jugador del tablero de juego durante la configuración
 			levelImage.SetActive(true);
@@ -124,7 +124,7 @@ namespace Completed
 		public void GameOver()
 		{
 			//Muestra el número de niveles pasados y el mensaje de juego terminado
-			levelText.text = "After " + level + " days, you starved.";
+			levelText.text = "Ronda " + level + " alcanzada";
 
 			//Activa la imagen negra de fondo gameObject
 			levelImage.SetActive(true);

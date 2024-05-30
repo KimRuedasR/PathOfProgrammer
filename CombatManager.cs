@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
 using System.IO;
+using System.Linq; //Importar System.Linq para usar métodos de LINQ
 
 namespace Completed
 {
@@ -28,6 +29,7 @@ namespace Completed
             public string question;
             public string[] answers;
             public int correctAnswerIndex;
+            public int difficulty; // Añadir nivel de dificultad
         }
 
         public List<Question> questions; // Lista de preguntas
@@ -50,14 +52,17 @@ namespace Completed
             questions = JsonUtility.FromJson<QuestionList>(jsonFile.text).questions;
         }
 
+        //
         public void StartCombat()
         {
             // Reproducir sonido de inicio de combate
             PlaySound(combatStartClip);
 
-            // Seleccionar una pregunta aleatoria y mostrarla
-            int randomIndex = Random.Range(0, questions.Count);
-            Question selectedQuestion = questions[randomIndex];
+            // Seleccionar una pregunta aleatoria dependiendo del nivel
+            int difficultyLevel = Mathf.FloorToInt(Mathf.Pow(1.2f, GameManager.instance.GetCurrentLevel()));
+            List<Question> filteredQuestions = questions.Where(q => q.difficulty <= difficultyLevel).ToList();
+            int randomIndex = Random.Range(0, filteredQuestions.Count);
+            Question selectedQuestion = filteredQuestions[randomIndex];
             DisplayQuestion(selectedQuestion);
         }
 

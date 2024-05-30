@@ -234,5 +234,10 @@ namespace Completed
 		{
 			return enemies.Count;
 		}
+
+		public int GetCurrentLevel()
+		{
+			return level;
+		}
 	}
 }

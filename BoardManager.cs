@@ -151,8 +151,8 @@ namespace Completed
 			//Instancia un número aleatorio de tiles de alimento basado en los límites mínimo y máximo aleaotorio
 			LayoutObjectAtRandom(foodTiles, foodCount.minimum, foodCount.maximum);
 
-			// Determina el número de enemigos basado en el número de nivel actual siguiendo un patrón incremental
-			int enemyCount = Mathf.Min(1 + (level - 1) / 2, 1 + (level - 1) / 2 + 1);
+			// Determina el número de enemigos basado en el nivel actual
+			int enemyCount = Mathf.FloorToInt(Mathf.Pow(1.4f, level));
 
 			//Instancia un número aleatorio de enemigos basado en los límites mínimo y máximo, en posiciones aleatorias
 			LayoutObjectAtRandom(enemyTiles, enemyCount, enemyCount);

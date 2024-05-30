@@ -23,7 +23,7 @@ namespace Completed
 		private Animator animator; //almacenar una referencia al componente Animator del jugador
 		private int food; //Almacenar el total de puntos de comida del jugador durante el nivel
 		private const int maxFood = 4; // Maximo de puntos de comida que el jugador puede obtener en el juego
-
+		private bool facingRight = true; // Almacenar la direccion del jugador
 				
 		public Image FoodImage; // El objeto de la imagen de vida en el UI
 		public Sprite life4Sprite;
@@ -114,11 +114,36 @@ namespace Completed
 			//Verifica si tenemos un valor distinto de cero para horizontal o vertical.
 			if (horizontal != 0 || vertical != 0)
 			{
+
+				// Verificar la dirección del movimiento y voltear al jugador si es necesario
+        		Flip(horizontal);
 				//Wall como parámetro para que el jugador interactue (ataque)
 				//horizontal y vertical como parámetros para dirección de movimiento
 				AttemptMove<Wall>(horizontal, vertical);
 			}
 		}
+		
+		//Método para voltear la dirección del jugador
+			private void Flip(int horizontal)
+			{
+				// Si el jugador se mueve a la derecha y no está mirando a la derecha, voltear
+				if (horizontal > 0 && !facingRight)
+				{
+					facingRight = true;
+					Vector3 theScale = transform.localScale;
+					theScale.x *= -1;
+					transform.localScale = theScale;
+				}
+				// Si el jugador se mueve a la izquierda y está mirando a la derecha, voltear
+				else if (horizontal < 0 && facingRight)
+				{
+					facingRight = false;
+					Vector3 theScale = transform.localScale;
+					theScale.x *= -1;
+					transform.localScale = theScale;
+				}
+			}
+
 
 		//Sobrescribe la función AttemptMove en la clase MovingObject.
 		// AttemptMove toma parámetro para que el jugador interactue y parámetros para dirección de movimiento

@@ -19,6 +19,7 @@ namespace Completed
         public AudioClip combatStartClip; // Clip de audio para el inicio del combate
         public AudioClip enemyDestroyedClip; // Clip de audio para la destrucción del enemigo
         public AudioClip playerChopClip; // Clip de audio para la animación de corte del jugador
+        public AudioClip playerDamageClip; // Clip de audio para la animación de corte del jugador
         private AudioSource audioSource; // Componente de AudioSource
 
         [System.Serializable]
@@ -129,6 +130,7 @@ namespace Completed
                 {
                     Animator enemyAnimator = enemy.GetComponent<Animator>();
                     enemyAnimator.SetTrigger("enemyAttack");
+                    PlaySound(playerDamageClip);
 
                     // El jugador pierde puntos de vida
                     GameObject player = GameObject.FindGameObjectWithTag("Player");
